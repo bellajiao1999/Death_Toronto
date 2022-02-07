@@ -1,0 +1,121 @@
+---
+title: "STA304 Paper 1"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+
+```
+
+1.Data Cleaning
+
+```{r cars}
+library(httr)
+library(readr)
+raw_data <- read.csv("Death Registry Statistics Data.csv")
+
+#Removing all the deaths that are outside city limits
+data<-subset(raw_data, PLACE_OF_DEATH == "Toronto")
+#Remove unwanted column
+data1 <- data[ , ! names(data) %in% c("PLACE_OF_DEATH")]
+#Remove the months and extract the Year from the column "Time_Period"
+data1$Year <- substr(data1$TIME_PERIOD, 1, 4)
+clean_data <- data1[ , ! names(data1) %in% c("TIME_PERIOD")]
+
+print(clean_data)
+```
+2. Summarize Data
+```{r}
+install.packages("gt")
+library(gt)
+library(dplyr)
+x_new = clean_data %>% group_by(CIVIC_CENTRE) %>% summarise(Total = sum(DEATH_LICENSES))
+
+sum(clean_data[which(clean_data$Year=='2018' & clean_data$CIVIC_CENTRE=='ET'), 3])
+sum(clean_data[which(clean_data$Year=='2018' & clean_data$CIVIC_CENTRE=='NY'), 3])
+sum(clean_data[which(clean_data$Year=='2018' & clean_data$CIVIC_CENTRE=='SC'), 3])
+sum(clean_data[which(clean_data$Year=='2018' & clean_data$CIVIC_CENTRE=='TO'), 3])
+vec <- c( 4811, 3607, 6383, 0) 
+sum(clean_data[which(clean_data$Year=='2019' & clean_data$CIVIC_CENTRE=='ET'), 3])
+sum(clean_data[which(clean_data$Year=='2019' & clean_data$CIVIC_CENTRE=='NY'), 3])
+sum(clean_data[which(clean_data$Year=='2019' & clean_data$CIVIC_CENTRE=='SC'), 3])
+sum(clean_data[which(clean_data$Year=='2019' & clean_data$CIVIC_CENTRE=='TO'), 3])
+vec_2 <- c(4560,3711,6166,178)
+sum(clean_data[which(clean_data$Year=='2020' & clean_data$CIVIC_CENTRE=='ET'), 3])
+sum(clean_data[which(clean_data$Year=='2020' & clean_data$CIVIC_CENTRE=='NY'), 3])
+sum(clean_data[which(clean_data$Year=='2020' & clean_data$CIVIC_CENTRE=='SC'), 3])
+sum(clean_data[which(clean_data$Year=='2020' & clean_data$CIVIC_CENTRE=='TO'), 3])
+vec_3 <- c(6128,2026,3561,2621)
+sum(clean_data[which(clean_data$Year=='2021' & clean_data$CIVIC_CENTRE=='ET'), 3])
+sum(clean_data[which(clean_data$Year=='2021' & clean_data$CIVIC_CENTRE=='NY'), 3])
+sum(clean_data[which(clean_data$Year=='2021' & clean_data$CIVIC_CENTRE=='SC'), 3])
+sum(clean_data[which(clean_data$Year=='2021' & clean_data$CIVIC_CENTRE=='TO'), 3])
+vec_4 <- c(13951,6,0,13)
+
+x_new$Year2018 <- vec
+x_new$Year2019 <- vec_2
+x_new$Year2020 <- vec_3
+x_new$Year2021 <- vec_4
+print(x_new)
+
+```
+3. Making Table
+```{r}
+install.packages("gt")
+library(dplyr)
+library(gt)
+x_new %>%
+  gt() %>%
+  tab_header(
+    title = md("Figure 2: The Total Number of Deaths and the Number of Deaths per Year"),
+    subtitle = "In four Toronto regions"
+  ) %>% cols_label(CIVIC_CENTRE = "Civic Centre", Year2018 = "Year 2018", Year2019 = "Year 2019", Year2020 = "Year 2020",Year2021 = "Year 2021") %>%
+  tab_source_note(md("More information is available at https://open.toronto.ca/dataset/death-registry-statistics/"))%>%
+  tab_style(
+    style = list(cell_fill(color = "#F4F4F4")),
+    locations = cells_body(columns = CIVIC_CENTRE)
+  )
+   
+```
+
+4. Making Graphs
+
+
+```{r }
+
+#library(magrittr)
+#library(ggplot2)
+#library(dplyr)
+#Number of Deaths from 2011 to 2022 in Toronto Regions
+gb <- ggplot(clean_data, aes(x = Year, y = DEATH_LICENSES, color = DEATH_LICENSES)) +
+  geom_point() +
+  labs(x = "Year", y = "Number of Deaths", color = "Number of Deaths")
+
+gb + scale_color_gradient(low = "skyblue",
+                          high = "darkblue")+ ggtitle ("Figure 1: Number of Deaths from 2011 to 2022 in Toronto Regions")
+
+#Pie Chart
+chem <- c("ET","NY","SC","TO")
+vol <- c(6128,2026,3561,2621)
+pie(x=vol, labels = chem, radius = 1,main = "Figure 4: Pie Chart for Number of Deaths in Different Regions in 2020", col=c("tan","salmon","slategray2","mistyrose2"),clockwise = T)
+
+#Line Graph for ET
+library(ggplot2)
+Year = c(2018,2019,2020,2021)
+DEATH_LICENSES = c(4811,4560,6128,13951) 
+df <- as.data.frame(cbind(Year,DEATH_LICENSES))
+ggplot(x_new, aes(Year)) +
+geom_line(aes(y = DEATH_LICENSES),col ="red") + labs(title = "Figure 3: Number of Death in Etobicoke in the Past Four Years", x = "Year", y = "Number of Deaths")
+
+# Add a legend
+legend(3.5, 38, legend=c("Event 1"),
+col=c("red"), lty=1:2, cex=0.8)
+```
+```{r}
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
