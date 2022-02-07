@@ -1,1 +1,2 @@
 # Death_Toronto
+The “Death Registry Statistics” data was drawn from the City of Toronto Open Portal to analyze the number of deaths in different regions in Toronto from January 2011 to January 2022. The data shows that the number of deaths has increased significantly since 2011, and a clear majority of the total deaths are from Etobicoke. This paper, along with other literary reviews, is to summarize the data, analyze the reasons for the increasing trend in the number of deaths and recommend further actions in improving public health.
